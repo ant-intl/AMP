@@ -1,0 +1,1738 @@
+// =============================================================================
+// AMP Shopping Agent — Design System (dual-theme, chat-first)
+// BEM class contract: component implementations must align with these classes.
+// Zero external UI dependencies; all motion is pure CSS.
+// Theme switching: CSS custom properties + [data-theme] attribute on <html>.
+// =============================================================================
+
+// --- Theme tokens (runtime-switchable via CSS custom properties) ---
+:root {
+  color-scheme: light;
+  // Surfaces
+  --bg-page: #f4f6f9;
+  --bg-card: #ffffff;
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-strong: rgba(255, 255, 255, 0.88);
+  --glass-chip: rgba(255, 255, 255, 0.82);
+  // Brand
+  --brand: #1677ff;
+  --brand-rgb: 22 119 255;
+  --brand-strong: #0958d9;
+  --brand-mid: #4f9cff;
+  // Text
+  --text-primary: #1f2329;
+  --text-secondary: #6b7280;
+  --text-faint: #9ca3af;
+  --on-brand: #ffffff;
+  // Borders
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --border-card: rgba(16, 24, 40, 0.09);
+  --divider: rgba(0, 0, 0, 0.06);
+  // Status
+  --success: #22c55e;
+  --success-rgb: 34 197 94;
+  --success-text: #059669;
+  --error: #ef4444;
+  --error-rgb: 239 68 68;
+  // Elevation (multi-layer ambient + key light)
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-pop: 0 4px 12px rgba(16, 24, 40, 0.06), 0 12px 32px rgba(16, 24, 40, 0.1);
+  --shadow-focus: 0 0 0 3px rgb(var(--brand-rgb) / 0.15);
+  --shadow-composer: 0 2px 8px rgba(16, 24, 40, 0.05), 0 -2px 20px rgba(16, 24, 40, 0.07);
+  --shadow-header: 0 1px 12px rgba(16, 24, 40, 0.05);
+  // Scrollbar
+  --scrollbar: rgba(16, 24, 40, 0.14);
+  --scrollbar-hover: rgba(16, 24, 40, 0.24);
+  // Ambient mesh gradient
+  --mesh-1: rgb(var(--brand-rgb) / 0.07);
+  --mesh-2: rgba(139, 92, 246, 0.05);
+  --mesh-3: rgba(20, 184, 166, 0.045);
+  // Component surfaces (cards with hardcoded palettes)
+  --chip-bg: #f4f6f9;
+  --btn-ghost-bg: rgba(0, 0, 0, 0.05);
+  --btn-ghost-text: #6b7280;
+  --travel-bg: linear-gradient(135deg, #f0f7ff 0%, #faf5ff 100%);
+  --travel-service-bg: rgba(99, 102, 241, 0.08);
+  --travel-service-text: #4f46e5;
+  --travel-accent: #4f46e5;
+  --travel-text: #4b5563;
+  --travel-city: #1f2937;
+  --shopping-bg: linear-gradient(135deg, #f0fdf4 0%, #f0f7ff 100%);
+  --shopping-accent: #059669;
+  --shopping-name: #1f2937;
+  --step-done-bg: rgba(5, 150, 105, 0.12);
+  // Scenario badge accents
+  --badge-autonomous: #8b5cf6;
+  --badge-autonomous-rgb: 139 92 246;
+  --badge-immediate: #0d9488;
+  --badge-immediate-rgb: 13 148 136;
+  // Image placeholder + accent rgb (for hover shadows)
+  --img-placeholder: rgba(16, 24, 40, 0.06);
+  --travel-accent-rgb: 79 70 229;
+  --shopping-accent-rgb: 5 150 105;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-page: #0f1117;
+  --bg-card: #1a1d27;
+  --glass: rgba(15, 17, 23, 0.78);
+  --glass-strong: rgba(26, 29, 39, 0.92);
+  --glass-chip: rgba(26, 29, 39, 0.82);
+  --brand: #4f9cff;
+  --brand-rgb: 79 156 255;
+  --brand-strong: #2b7fff;
+  --brand-mid: #7db8ff;
+  --text-primary: #e8eaed;
+  --text-secondary: #9aa0ab;
+  --text-faint: #6b7280;
+  --on-brand: #ffffff;
+  --border: #2a2e3a;
+  --border-strong: #3a3f4d;
+  --border-card: rgba(255, 255, 255, 0.08);
+  --divider: rgba(255, 255, 255, 0.07);
+  --success: #34d399;
+  --success-rgb: 52 211 153;
+  --success-text: #34d399;
+  --error: #f87171;
+  --error-rgb: 248 113 113;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.28);
+  --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.42);
+  --shadow-focus: 0 0 0 3px rgb(var(--brand-rgb) / 0.22);
+  --shadow-composer: 0 2px 8px rgba(0, 0, 0, 0.28), 0 -2px 20px rgba(0, 0, 0, 0.32);
+  --shadow-header: 0 1px 12px rgba(0, 0, 0, 0.32);
+  --scrollbar: rgba(255, 255, 255, 0.14);
+  --scrollbar-hover: rgba(255, 255, 255, 0.24);
+  --mesh-1: rgb(var(--brand-rgb) / 0.055);
+  --mesh-2: rgba(139, 92, 246, 0.045);
+  --mesh-3: rgba(20, 184, 166, 0.035);
+  --chip-bg: #1e2130;
+  --btn-ghost-bg: rgba(255, 255, 255, 0.06);
+  --btn-ghost-text: #9aa0ab;
+  --travel-bg: linear-gradient(135deg, #151b2e 0%, #1c1730 100%);
+  --travel-service-bg: rgba(129, 140, 248, 0.12);
+  --travel-service-text: #a5b4fc;
+  --travel-accent: #818cf8;
+  --travel-text: #9aa0ab;
+  --travel-city: #e8eaed;
+  --shopping-bg: linear-gradient(135deg, #12211c 0%, #151b2e 100%);
+  --shopping-accent: #34d399;
+  --shopping-name: #e8eaed;
+  --step-done-bg: rgba(52, 211, 153, 0.14);
+  --badge-autonomous: #a78bfa;
+  --badge-autonomous-rgb: 167 139 250;
+  --badge-immediate: #2dd4bf;
+  --badge-immediate-rgb: 45 212 191;
+  --img-placeholder: rgba(255, 255, 255, 0.08);
+  --travel-accent-rgb: 129 140 248;
+  --shopping-accent-rgb: 52 211 153;
+}
+
+// --- Static tokens (compile-time, theme-independent) ---
+$radius-bubble: 18px;
+$radius-card: 12px;
+$radius-pill: 24px;
+$chat-width: 920px;
+$font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+
+// Motion curves
+$ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+// --- Reset ---
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  // Layered ambient mesh gradient (theme-aware)
+  background:
+    radial-gradient(ellipse 900px 520px at 12% -6%, var(--mesh-1), transparent 55%),
+    radial-gradient(ellipse 760px 480px at 88% 2%, var(--mesh-2), transparent 50%),
+    radial-gradient(ellipse 1100px 700px at 50% 112%, var(--mesh-3), transparent 55%),
+    var(--bg-page);
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  // Scroll lock: the chat pane is the only scrollable surface
+  overflow: hidden;
+  overscroll-behavior: none;
+  // Smooth theme cross-fade
+  transition: background-color 350ms ease, color 250ms ease;
+}
+
+button {
+  font-family: inherit;
+}
+
+// --- Accessibility: visible keyboard focus ring (WCAG 2.4.7) ---
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+// --- Keyframes ---
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Shimmer sweep for "agent working" text (modern AI tool style)
+@keyframes shimmer-text {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.working-text {
+  background: linear-gradient(90deg, var(--text-faint) 30%, var(--brand) 50%, var(--text-faint) 70%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-text 2s linear infinite;
+  font-weight: 600;
+}
+
+// -----------------------------------------------------------------------------
+// Search status line (searching → matched) — Perplexity-style completion
+// -----------------------------------------------------------------------------
+.search-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  line-height: 1;
+
+  &--working {
+    .search-status__icon {
+      color: var(--brand);
+      animation: search-pulse 1.6s ease-in-out infinite;
+    }
+  }
+
+  &--done {
+    animation: search-done-in 320ms $ease-out-expo both;
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--success);
+    color: #fff;
+    flex-shrink: 0;
+    animation: check-pop 380ms $ease-out-expo 60ms both;
+    box-shadow: 0 1px 4px rgb(var(--success-rgb) / 0.35);
+  }
+
+  &__label {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  &__elapsed {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success-text);
+    background: rgb(var(--success-rgb) / 0.1);
+    border: 1px solid rgb(var(--success-rgb) / 0.18);
+    border-radius: 99px;
+    padding: 2px 7px;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes search-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.88); }
+}
+
+@keyframes search-done-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Evidence accordion under the matched-products line (Perplexity-style scope disclosure)
+.search-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  // The status line doubles as the toggle button — reset native button chrome.
+  .search-status--done {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__chevron {
+    color: var(--text-faint);
+    transition: transform 220ms $ease-out-expo;
+    flex-shrink: 0;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding-left: 24px; // align under the label, past the 17px check + 7px gap
+    animation: search-done-in 240ms $ease-out-expo both;
+  }
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+// Gentle levitation for the empty-state hero orb
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+// =============================================================================
+// App shell
+// =============================================================================
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+
+  // --- Glassmorphic header (frosted bar, content scrolls beneath) ---
+  &__header {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(1.7);
+    backdrop-filter: blur(16px) saturate(1.7);
+    box-shadow: var(--shadow-header);
+    transition: background-color 350ms ease;
+
+    // Gradient fade-out line instead of a hard border
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 4%,
+        rgb(var(--brand-rgb) / 0.16) 30%,
+        rgba(139, 92, 246, 0.12) 70%,
+        transparent 96%
+      );
+    }
+  }
+
+  &__header-inner {
+    max-width: $chat-width;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  // Brand icon tile with gradient fill
+  &__header-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-mid) 55%, #8b5cf6 130%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgb(var(--brand-rgb) / 0.3);
+  }
+
+  &__header-title {
+    font-size: 15.5px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  // Scenario badge (Linear-style environment indicator)
+  &__scenario-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px 3px 8px;
+    border-radius: $radius-pill;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: background 350ms ease, color 350ms ease;
+
+    &--autonomous {
+      background: rgb(var(--badge-autonomous-rgb) / 0.09);
+      border: 1px solid rgb(var(--badge-autonomous-rgb) / 0.22);
+      color: var(--badge-autonomous);
+
+      .app__scenario-dot {
+        background: var(--badge-autonomous);
+        box-shadow: 0 0 5px rgb(var(--badge-autonomous-rgb) / 0.55);
+      }
+    }
+
+    &--immediate {
+      background: rgb(var(--badge-immediate-rgb) / 0.09);
+      border: 1px solid rgb(var(--badge-immediate-rgb) / 0.22);
+      color: var(--badge-immediate);
+
+      .app__scenario-dot {
+        background: var(--badge-immediate);
+        box-shadow: 0 0 5px rgb(var(--badge-immediate-rgb) / 0.55);
+      }
+    }
+  }
+
+  &__scenario-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+
+  // Theme toggle button (sun/moon with rotation transition)
+  &__theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 200ms, border-color 200ms, background 200ms;
+
+    svg {
+      transition: transform 350ms $ease-spring;
+    }
+
+    &:hover {
+      color: var(--brand);
+      border-color: rgb(var(--brand-rgb) / 0.4);
+      background: rgb(var(--brand-rgb) / 0.06);
+
+      svg {
+        transform: rotate(25deg) scale(1.08);
+      }
+    }
+
+    &:active svg {
+      transform: rotate(-15deg) scale(0.9);
+    }
+  }
+
+  // Status capsule (right side of header)
+  &__header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 4px 12px 4px 9px;
+    background: rgb(var(--success-rgb) / 0.08);
+    border: 1px solid rgb(var(--success-rgb) / 0.18);
+    border-radius: $radius-pill;
+    transition: background 200ms, border-color 200ms;
+
+    &--busy {
+      background: rgb(var(--brand-rgb) / 0.07);
+      border-color: rgb(var(--brand-rgb) / 0.18);
+      color: var(--brand);
+    }
+  }
+
+  &__status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+
+    &--busy {
+      background: var(--brand);
+      animation: typing-bounce 1.2s infinite;
+    }
+  }
+
+  // --- Chat scroll pane (the only scrollable surface) ---
+  &__chat {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--scrollbar);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--scrollbar-hover);
+      }
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  &__chat-inner {
+    max-width: $chat-width;
+    margin: 0 auto;
+    padding: 28px 20px 20px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__error {
+    flex-shrink: 0;
+    padding: 8px 20px;
+    background: rgb(var(--error-rgb) / 0.08);
+    color: var(--error);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  // "New messages" pill: floats above the composer while the user is scrolled up
+  &__new-messages {
+    position: absolute;
+    bottom: 112px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 7px 16px;
+    background: var(--glass-strong);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: $radius-pill;
+    box-shadow: var(--shadow-pop);
+    font-size: 13px;
+    color: var(--brand);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    animation: msg-in 200ms $ease-out-expo;
+    transition: border-color 120ms, box-shadow 120ms;
+
+    &:hover {
+      border-color: var(--brand);
+      box-shadow: var(--shadow-focus);
+    }
+  }
+}
+
+// =============================================================================
+// Empty state (welcome)
+// =============================================================================
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  // Optical centering: shift content slightly above geometric center
+  padding: 24px 20px 8vh;
+
+  // Gradient hero orb with ambient glow + gentle levitation
+  &__icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-mid) 45%, #8b5cf6 115%);
+    box-shadow:
+      0 8px 28px rgb(var(--brand-rgb) / 0.3),
+      0 2px 8px rgb(var(--brand-rgb) / 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    margin-bottom: 22px;
+    animation: float-gentle 4.5s ease-in-out infinite, msg-in 400ms $ease-out-expo both;
+  }
+
+  // Gradient hero heading (Claude/Linear-style brand text)
+  &__title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--text-primary) 40%, var(--brand) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: msg-in 400ms $ease-out-expo 80ms both;
+  }
+
+  &__desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 440px;
+    margin-bottom: 28px;
+    line-height: 1.7;
+    text-wrap: balance;
+    animation: msg-in 400ms $ease-out-expo 160ms both;
+  }
+
+  // Stage-aware suggestion chips (click to send directly)
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    animation: msg-in 400ms $ease-out-expo 240ms both;
+  }
+
+  &__chip {
+    padding: 9px 18px;
+    background: var(--glass-chip);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: $radius-pill;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: all 160ms $ease-out-expo;
+
+    &:hover {
+      color: var(--brand);
+      border-color: rgb(var(--brand-rgb) / 0.45);
+      box-shadow: 0 4px 14px rgb(var(--brand-rgb) / 0.13);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.97);
+    }
+  }
+}
+
+// =============================================================================
+// Message rows & bubbles
+// =============================================================================
+.message {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  animation: msg-in 200ms $ease-out-expo;
+
+  &--user {
+    flex-direction: row-reverse;
+
+    .message__bubble {
+      background: var(--brand);
+      color: var(--on-brand);
+      border: none;
+      border-radius: $radius-bubble $radius-bubble 4px $radius-bubble;
+    }
+
+    .message__meta {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &--agent {
+    .message__bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: $radius-bubble $radius-bubble $radius-bubble 4px;
+      transition: background-color 350ms ease, border-color 350ms ease;
+
+      // Quiet variant: search-completed state — lighter, success-tinted
+      &--quiet {
+        background: rgb(var(--success-rgb) / 0.045);
+        border-color: rgb(var(--success-rgb) / 0.14);
+        padding: 8px 12px;
+      }
+    }
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 2px;
+
+    &--user {
+      background: var(--border);
+      color: var(--text-secondary);
+    }
+
+    &--agent {
+      background: var(--brand);
+      color: var(--on-brand);
+    }
+  }
+
+  &__body {
+    max-width: min(85%, 640px);
+    min-width: 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+    padding: 0 2px;
+  }
+
+  &__role {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  &__time {
+    font-size: 11.5px;
+    color: var(--text-secondary); // informative text: WCAG AA contrast
+  }
+
+  &__bubble {
+    padding: 13px 18px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    box-shadow: var(--shadow-card);
+    word-break: break-word;
+  }
+
+  &__text {
+    white-space: pre-wrap;
+  }
+
+  &__cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: -0.15em;
+    background: var(--brand);
+    animation: caret-blink 0.8s infinite;
+  }
+}
+
+// Dark theme: deepen the user bubble so white text meets WCAG AA contrast
+[data-theme='dark'] .message--user .message__bubble {
+  background: var(--brand-strong);
+}
+
+// =============================================================================
+// Typing indicator (three dots)
+// =============================================================================
+.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 2px;
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    animation: typing-bounce 1.2s infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+}
+
+// =============================================================================
+// Step progress (inside agent bubble)
+// =============================================================================
+.steps {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 13.5px;
+    font-family: $font-mono;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--running {
+      color: var(--brand);
+      animation: spin 0.9s linear infinite;
+    }
+
+    &--done {
+      background: var(--success);
+      color: #fff;
+      border-radius: 50%;
+      animation: check-pop 300ms $ease-spring;
+    }
+  }
+
+  &__name {
+    color: var(--text-secondary);
+
+    .steps__item--running & {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+  }
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 2px 0;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--brand);
+    }
+  }
+}
+
+
+// =============================================================================
+// Payment receipt card (inside completed purchase bubble)
+// =============================================================================
+.receipt {
+  margin-top: 10px;
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: $radius-pill;
+    padding: 5px 13px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 120ms, color 120ms;
+
+    &:hover {
+      border-color: var(--success);
+      color: var(--text-primary);
+    }
+  }
+
+  &__toggle-icon {
+    display: flex;
+    align-items: center;
+    transition: transform 200ms $ease-out-expo;
+
+    &--open {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__txn {
+    font-family: $font-mono;
+    font-size: 11px;
+    color: var(--text-secondary); // informative text: WCAG AA contrast
+  }
+
+  &__summary {
+    font-size: 12px;
+    color: var(--text-secondary); // informative text: WCAG AA contrast
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__body {
+    margin-top: 8px;
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+    border-radius: $radius-card;
+    overflow: hidden;
+    animation: msg-in 200ms $ease-out-expo;
+    transition: background-color 350ms ease, border-color 350ms ease;
+  }
+
+  &__section {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 5px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 0;
+    font-size: 13px;
+  }
+
+  &__key {
+    color: var(--text-primary);
+  }
+
+  &__val {
+    color: var(--text-secondary);
+    text-align: right;
+
+    &--mono {
+      font-family: $font-mono;
+      font-size: 12px;
+    }
+  }
+
+  &__check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+    font-size: 13px;
+    color: var(--text-primary);
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  &__check-icon--ok {
+    color: var(--success);
+  }
+
+  &__check-icon--warn {
+    color: var(--text-faint);
+  }
+
+  &__thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    object-fit: cover;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  &__total {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+}
+
+// =============================================================================
+// IDV confirm card (inside agent bubble while waiting for user verification)
+// =============================================================================
+.idv-card {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgb(var(--brand-rgb) / 0.05);
+  border: 1px solid rgb(var(--brand-rgb) / 0.25);
+  border-radius: $radius-card;
+  animation: msg-in 200ms $ease-out-expo;
+
+  // The wallet brand mark ships its own rounded-square tile — no circle frame.
+  &__icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__desc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  &__confirm {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: var(--brand);
+    color: var(--on-brand);
+    border: none;
+    border-radius: $radius-pill;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 120ms, transform 120ms $ease-out-expo, box-shadow 120ms;
+
+    &:hover:not(:disabled) {
+      background: var(--brand-strong);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgb(var(--brand-rgb) / 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    &:disabled {
+      cursor: default;
+      background: var(--brand-strong);
+    }
+  }
+
+  &__done {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--success-text);
+  }
+}
+
+// =============================================================================
+// Error recovery actions (inside failed agent bubble)
+// =============================================================================
+.error-actions {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+
+  &__hint {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__chip {
+    padding: 6px 14px;
+    background: var(--chip-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-pill;
+    font-size: 13px;
+    color: var(--brand);
+    cursor: pointer;
+    transition: border-color 120ms, box-shadow 120ms;
+
+    &:hover {
+      border-color: var(--brand);
+      box-shadow: var(--shadow-focus);
+    }
+  }
+
+  &__retry {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--chip-bg);
+    border: 1px solid var(--border);
+    border-radius: $radius-pill;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 120ms, color 120ms;
+
+    &:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+  }
+}
+
+// Inline spinner inside action buttons (confirming state)
+.icon-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+// Product image fade-in over a placeholder background (kills layout flicker)
+.img-fade {
+  opacity: 0;
+  background: var(--img-placeholder);
+  transition: opacity 240ms ease;
+
+  &--loaded {
+    opacity: 1;
+  }
+}
+
+// Truncated hash with click-to-copy (receipt transaction / checkout IDs)
+.hash-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: copy;
+
+  &__icon {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: color 120ms;
+
+    &--ok {
+      color: var(--success-text);
+    }
+  }
+
+  &:hover .hash-copy__icon {
+    color: var(--brand);
+  }
+}
+
+// =============================================================================
+// Composer (floating card, ChatGPT/Claude pattern)
+// =============================================================================
+.composer {
+  flex-shrink: 0;
+  padding: 12px 24px 28px;
+  background: transparent;
+
+  &__inner {
+    max-width: $chat-width;
+    margin: 0 auto;
+  }
+
+  // The floating card container
+  &__card {
+    display: flex;
+    align-items: flex-end; // send button bottom-aligned for the multiline textarea
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 20px;
+    padding: 7px 8px 7px 4px;
+    box-shadow: var(--shadow-composer);
+    transition: border-color 200ms, box-shadow 250ms $ease-out-expo, background-color 350ms ease;
+
+    &:focus-within {
+      border-color: rgb(var(--brand-rgb) / 0.45);
+      box-shadow:
+        var(--shadow-composer),
+        0 0 0 3px rgb(var(--brand-rgb) / 0.1);
+    }
+  }
+
+  &__input {
+    flex: 1;
+    display: block;
+    padding: 9px 4px 9px 16px;
+    border: none;
+    background: transparent;
+    font-size: 15.5px;
+    line-height: 1.5;
+    font-family: inherit;
+    color: var(--text-primary);
+    outline: none;
+    // Auto-growing multiline input (textarea): capped, then internal scroll
+    resize: none;
+    max-height: 200px;
+    overflow-y: auto;
+
+    // The card's :focus-within already carries the focus ring
+    &:focus-visible {
+      box-shadow: none;
+    }
+
+    &::placeholder {
+      color: var(--text-faint);
+    }
+
+    &:disabled {
+      color: var(--text-faint);
+      cursor: not-allowed;
+    }
+  }
+
+  &__send {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+    color: var(--on-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgb(var(--brand-rgb) / 0.28);
+    transition: transform 120ms $ease-spring, box-shadow 120ms, opacity 120ms;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 4px 14px rgb(var(--brand-rgb) / 0.38);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.93);
+    }
+
+    &:disabled {
+      background: var(--border);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// --- Wallet connected card (login indicator, binding-completed turn) ---
+.wallet-card {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgb(var(--success-rgb) / 0.06);
+  border: 1px solid rgb(var(--success-rgb) / 0.3);
+  border-radius: $radius-card;
+  animation: msg-in 200ms $ease-out-expo;
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__status {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  &__check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--success);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Travel Intent Card (P0 travel delegation)
+// ---------------------------------------------------------------------------
+.travel-card {
+  margin-top: 10px;
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--travel-bg);
+  transition: background 350ms ease, border-color 350ms ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 10px;
+  }
+
+  &__route {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  &__city {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--travel-city);
+  }
+
+  &__arrow {
+    font-size: 16px;
+    color: var(--text-faint);
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--travel-text);
+  }
+
+  &__service {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--travel-service-bg);
+    font-size: 12px;
+    color: var(--travel-service-text);
+    text-transform: capitalize;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 120ms $ease-out-expo, box-shadow 120ms, opacity 0.15s;
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &--confirm {
+      background: var(--travel-accent);
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgb(var(--travel-accent-rgb) / 0.35);
+      }
+    }
+
+    &--cancel {
+      background: var(--btn-ghost-bg);
+      color: var(--btn-ghost-text);
+
+      &:hover:not(:disabled) {
+        opacity: 0.85;
+      }
+    }
+  }
+
+  &__processing {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--travel-accent);
+    padding: 8px 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shopping Intent Card (IMMEDIATE mode mandate IDV)
+// ---------------------------------------------------------------------------
+.shopping-card {
+  margin-top: 10px;
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--shopping-bg);
+  transition: background 350ms ease, border-color 350ms ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 10px;
+  }
+
+  &__mandate {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  &__intent {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--shopping-name);
+    line-height: 1.4;
+  }
+
+  &__amount {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--shopping-accent);
+  }
+
+  &__product {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  &__img {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--shopping-name);
+  }
+
+  &__desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__price {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--shopping-accent);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 120ms $ease-out-expo, box-shadow 120ms, opacity 0.15s;
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &--confirm {
+      background: var(--shopping-accent);
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgb(var(--shopping-accent-rgb) / 0.35);
+      }
+    }
+
+    &--cancel {
+      background: var(--btn-ghost-bg);
+      color: var(--btn-ghost-text);
+
+      &:hover:not(:disabled) {
+        opacity: 0.85;
+      }
+    }
+  }
+
+  &__processing {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--shopping-accent);
+    padding: 8px 0;
+  }
+}
+
+// --- Product journey message (one standalone message per purchased product) ---
+.product-journey {
+  &__card {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  &__img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  &__price {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  &__match {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--success-text);
+    font-weight: 600;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  &__journey {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--divider);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__step {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+  }
+
+  &__step-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--done {
+      background: var(--step-done-bg);
+      color: var(--success-text);
+    }
+
+    &--active {
+      color: var(--brand);
+    }
+  }
+
+  &__step-text {
+    color: var(--text-primary);
+
+    &--active {
+      color: var(--brand);
+      font-weight: 600;
+    }
+  }
+
+  &__spin {
+    animation: spin 0.9s linear infinite;
+  }
+
+  &__quota {
+    margin-top: 2px;
+    margin-left: 23px;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
+
+  &__ref {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+// =============================================================================
+// Reduced motion: honor the OS-level preference (WCAG 2.3.3)
+// =============================================================================
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
