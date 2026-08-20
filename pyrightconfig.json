@@ -1,0 +1,25 @@
+{
+    "include": [
+        "src/python",
+        "samples/python",
+        "tests/python"
+    ],
+    "executionEnvironments": [
+        {
+            "root": "src/python",
+            "extraPaths": ["src/python"]
+        },
+        {
+            "root": "samples/python",
+            "extraPaths": ["src/python"]
+        },
+        {
+            "root": "tests/python",
+            "extraPaths": ["src/python"]
+        }
+    ],
+    "pythonVersion": "3.11",
+    "typeCheckingMode": "basic",
+    "reportMissingImports": "warning",
+    "reportGeneralTypeIssues": "warning"
+}
