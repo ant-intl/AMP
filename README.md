@@ -87,6 +87,11 @@ amp/
 - **Frontend:** Vite + React 18 + TypeScript + SCSS (`lucide-react` icons)
 - **Persistence (demo):** per-run SQLite / JSON stores under `.temp-db/`
 
+## Contact
+
+For security issues, please reach out to
+alipayplus_amp@ant-intl.com.
+
 ## License
 
 See [LICENSE](LICENSE).
